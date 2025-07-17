@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import RegisterPage from "./page/RegisterPage";
 import LoginPage from "./page/LoginPage";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "../src/components/context/AuthContext";
 
 const App = () => {
   return (

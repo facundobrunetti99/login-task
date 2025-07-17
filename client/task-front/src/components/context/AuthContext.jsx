@@ -1,13 +1,13 @@
 import { createContext, useState, useContext } from "react";
 import React from "react";
-import { registerRequest } from "../api/auth";
+import { registerRequest } from "../../api/auth";
 
 export const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error("el useProvider deberia estar dentro del contexto");
   }
   return context;
 };
