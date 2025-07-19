@@ -1,5 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useAuth } from "../components/context/AuthContext";
+import { Link } from "react-router";
 
 const LoginPage = () => {
   const {
@@ -7,12 +9,23 @@ const LoginPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const {singin, errors:singinErrors}=useAuth();
+
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
+    singin(data);
   });
   return (
     <div className="flex h-[calc(100vh-100px)] items-center justify-center">
-      <div className="bg-zinc-800 max-w-md w-full p-10 rounded-md">
+      <div className="bg-zinc-800 max-w-md w-full p-10 rounded-md my-2">
+  {Array.isArray(singinErrors) &&
+  singinErrors.map((error, i) => (
+    <div key={i} className="bg-red-500 p-2">
+      {error}
+    </div>
+))}
+
+
+        <h1 className='text-2xl font-bold'>Iniciar Sesion</h1>
         <form onSubmit={onSubmit}>
           <input
             type="text"
@@ -32,8 +45,12 @@ const LoginPage = () => {
             <p className="text-red-500">La contraseña es requerida</p>
           )}
 
-          <button type="submit">Registrar</button>
+          <button type="submit">Inciar sesion</button>
         </form>
+        <p className="flex gap-x-2 justify-between">No tienes una cuenta? 
+
+          <Link to="/register" className="text-sky-200">Registrarse</Link>
+        </p>
       </div>
     </div>
   );
