@@ -2,8 +2,11 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../components/context/AuthContext";
 import { Link } from "react-router";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const LoginPage = () => {
+
   const {
     register,
     handleSubmit,
@@ -11,9 +14,18 @@ const LoginPage = () => {
   } = useForm();
   const {singin, errors:singinErrors}=useAuth();
 
+ const { singup, isAuthenticated, errors: registerErrors } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) navigate("/task");
+  }, [isAuthenticated]);
   const onSubmit = handleSubmit((data) => {
     singin(data);
   });
+
+
+  
   return (
     <div className="flex h-[calc(100vh-100px)] items-center justify-center">
       <div className="bg-zinc-800 max-w-md w-full p-10 rounded-md my-2">

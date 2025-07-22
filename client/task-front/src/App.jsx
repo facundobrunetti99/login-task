@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import RegisterPage from "./page/RegisterPage";
 import LoginPage from "./page/LoginPage";
 import { AuthProvider } from "../src/components/context/AuthContext";
+import { TaskProvider } from "../src/components/context/TaskContext"; // ✅ IMPORTAR
 import TaskPage from "../src/page/TaskPage";
 import TaskFormPage from "../src/page/TaskFormPage";
 import ProfilePage from "./page/ProfilePage";
@@ -12,20 +13,22 @@ import ProtectedRoute from "./ProtectedRoute";
 const App = () => {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage/>}></Route>
-          <Route path="/login" element={<LoginPage />}></Route>
-          <Route path="/register" element={<RegisterPage />}></Route>
+      <TaskProvider> {/* ✅ ENVOLVER CON TaskProvider */}
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
-          <Route element={<ProtectedRoute></ProtectedRoute>}>
-          <Route path="/tasks" element={<TaskPage/>}></Route>
-          <Route path="/add-task" element={<TaskFormPage/>}></Route>
-          <Route path="/tasks/:id" element={<TaskFormPage/>}></Route>
-          <Route path="/profile" element={<ProfilePage/>}></Route>
-          </Route>
-        </Routes>
-      </BrowserRouter>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/task" element={<TaskFormPage />} />
+              <Route path="/add-task" element={<TaskFormPage />} />
+              <Route path="/tasks/:id" element={<TaskFormPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </TaskProvider>
     </AuthProvider>
   );
 };
