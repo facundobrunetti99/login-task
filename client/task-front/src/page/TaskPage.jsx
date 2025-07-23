@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 import { useTask } from '../components/context/TaskContext';
 import { useEffect } from 'react';
+import TaskCard from "../components/TaskCard";
 const TaskPage = () => {
 
   const {getTasks,tasks} = useTask();
@@ -25,14 +26,11 @@ const TaskPage = () => {
     <div className="flex justify-center items-center min-h-screen bg-gray-900">
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {
-      tasks.length === 0 ? (
+     tasks.length<= 0 ? (
         <p className="text-white">No hay tareas disponibles</p>
       ) : (
         tasks.map(task => (
-          <div key={task._id} className="bg-white rounded-xl shadow-lg p-6 w-72">
-            <h3 className="text-xl text-center center font-semibold text-gray-800">{task.title}</h3>
-            <p className="text-gray-600 text-center mt-2">{task.description}</p>
-          </div>
+          <TaskCard task={task} key={task._id}></TaskCard>
         ))
       )
     }

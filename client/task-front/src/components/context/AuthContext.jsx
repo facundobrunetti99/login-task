@@ -1,16 +1,13 @@
-import React from "react";
-
-import { createContext, useState, useContext, useEffect } from "react";
-import { registerRequest,loginRequest,verifyTokenRequest } from "../../api/auth";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { registerRequest, loginRequest, verifyTokenRequest } from "../../api/auth";
 import Cookies from "js-cookie";
-
 
 export const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("el useProvider deberia estar dentro del contexto");
+    throw new Error("useAuth debe estar dentro de AuthProvider");
   }
   return context;
 };
@@ -23,72 +20,63 @@ export const AuthProvider = ({ children }) => {
   const singup = async (user) => {
     try {
       const res = await registerRequest(user);
-      console.log(res.data);
-      setUser(res.data);
       setIsAuthenticated(true);
+      setUser(res.data);
     } catch (error) {
-      setErrors(error.response.data);
+      setErrors(error.response?.data || ["Error al registrar"]);
     }
   };
 
-
-const singin = async (user) => {
-  try {
-    const res = await loginRequest(user);
-    setIsAuthenticated(true);
-    setUser(res.data);  // res.data debería contener el user
-    console.log(res.data);
-  } catch (error) {
-    if (Array.isArray(error.response.data)) {
-      return setErrors(error.response.data);
-    }
-    setErrors([error.response.data.message || "Error al iniciar sesión"]);
-  }
-};
-
-const logout = () => {
-  Cookies.remove("token");
-  setIsAuthenticated(false);
-  setUser(null);
-  setErrors([]);
-};
-useEffect(()=>{
-  if(errors.length>0){
-    const timer=setTimeout(()=>{
-      setErrors([])
-    },5000)
-    return ()=>clearTimeout(timer)
-
-  }
-},[errors])
-
-  useEffect(()=>{
-
- async function  checkLogin (){
-  
-   const cookies=Cookies.get();
-  if(cookies.token){
-    try { 
-      const res= await verifyTokenRequest(cookies.token);
-      if(!res.data) return setIsAuthenticated(false);
+  const singin = async (user) => {
+    try {
+      const res = await loginRequest(user);
       setIsAuthenticated(true);
       setUser(res.data);
-      
-      console.log(res.data);
-    }catch (error) {
-      console.log(error);
-      setIsAuthenticated(false);
-      setUser(null);
-    }}
+    } catch (error) {
+      if (Array.isArray(error.response?.data)) {
+        return setErrors(error.response.data);
+      }
+      setErrors([error.response?.data?.message || "Error al iniciar sesión"]);
+    }
+  };
 
-    
- }
- checkLogin();
-  },[])
+  const logout = () => {
+    Cookies.remove("token");
+    setIsAuthenticated(false);
+    setUser(null);
+    setErrors([]);
+  };
 
+  useEffect(() => {
+    if (errors.length > 0) {
+      const timer = setTimeout(() => setErrors([]), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errors]);
+
+  useEffect(() => {
+    async function checkLogin() {
+      try {
+        const res = await verifyTokenRequest();
+        if (res.data?.message) {
+          // Si hay un error de autorización
+          setIsAuthenticated(false);
+          setUser(null);
+          return;
+        }
+        setIsAuthenticated(true);
+        setUser(res.data);
+      } catch (error) {
+        setIsAuthenticated(false);
+        setUser(null);
+      }
+    }
+
+    checkLogin();
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ singup,singin,logout, user, isAuthenticated, errors }}>
+    <AuthContext.Provider value={{ singup, singin, logout, user, isAuthenticated, errors }}>
       {children}
     </AuthContext.Provider>
   );

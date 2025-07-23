@@ -1,6 +1,6 @@
 import {createContext, useContext,useState} from 'react';
 import React from 'react';
-import { createTaskRequest,getTasksRequest } from '../../api/task';
+import { createTaskRequest,getTasksRequest,deleteTaskRequest,getTaskRequest,updateTaskRequest } from '../../api/task';
 
 const TaskContext = createContext();
 export const useTask = () => {
@@ -31,16 +31,65 @@ try {
   const res = await getTasksRequest();  
   setTasks(res.data);
 } catch (error) { 
-  console.error("Error al obtener las tareas:", error)
+
+if (error.response && error.response.status === 401) {
+    console.error(error.response.data.message);
+  } else if (error.response && error.response.status === 404) {
+    console.error("No se encontraron tareas."); 
+  }
+
+
 
 }
+
+
 };
+
+const deleteTask = async (id) => {
+try {
+  await deleteTaskRequest(id);
+  setTasks(tasks.filter(task => task._id !== id));
+  console.log(error)
+}
+catch (error) {
+  if (error.response && error.response.status === 404) {
+    console.error("Tarea no encontrada para eliminar.");
+  } 
+}
+};
+
+const getTask = async (id) => {
+  try {
+    const res = await getTaskRequest(id);
+    return res.data;
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      console.error("Tarea no encontrada.");
+    }
+    }}
+
+
+const updateTask = async (id, task) => {
+  try {
+    const res = await updateTaskRequest(id, task); // ✅ ahora correcto
+    setTasks(tasks.map(t => (t._id === id ? res.data : t)));
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    if (error.response && error.response.status === 404) {
+      console.error("Tarea no encontrada para actualizar.");
+    }
+  }
+}
+
 
     return (
         <TaskContext.Provider value={{
             tasks,
             createTask,
-            getTasks
+            getTasks,
+            deleteTask,
+            getTask,updateTask
           
         }}>
             {children}

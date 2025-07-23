@@ -17,7 +17,7 @@ const RegisterPage = () => {
   }, [isAuthenticated]);
 
   const onSubmit = handleSubmit(async (values) => {
-    singup(values);
+    await singup(values);
   });
 
   return (

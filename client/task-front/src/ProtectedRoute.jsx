@@ -1,17 +1,17 @@
-import React from 'react'
-import { useAuth } from './components/context/AuthContext'
-import { Link, Navigate, Outlet } from 'react-router-dom';
+import React from 'react';
+import { useAuth } from './components/context/AuthContext';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 const ProtectedRoute = () => {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
 
-    const {user,isAuthenticated}=useAuth();
-    if(!isAuthenticated) {
-        return <Navigate to={"/"} replace></Navigate>
-    }
+  if (!isAuthenticated) {
+    // Guarda la ruta actual en `state.from`
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
-  return (
-    <Outlet/>
-  )
-}
+  return <Outlet />;
+};
 
-export default ProtectedRoute
+export default ProtectedRoute;

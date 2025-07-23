@@ -1,45 +1,41 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../components/context/AuthContext";
-import { Link } from "react-router";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 const LoginPage = () => {
-
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
+  const { singin, isAuthenticated, errors: singinErrors } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const navigate = useNavigate();const { singin, singup, isAuthenticated, errors:singinErrors } = useAuth();
-
+  const from = location.state?.from?.pathname || "/tasks/new";
 
   useEffect(() => {
-   if (isAuthenticated) navigate("/tasks/new");
-  }, [isAuthenticated])
+    if (isAuthenticated) navigate(from, { replace: true });
+  }, [isAuthenticated]);
 
-  
-  const onSubmit = handleSubmit((data) => {
-    singin(data);
+  const onSubmit = handleSubmit(async (data) => {
+    await singin(data);
+    // La redirección automática ocurre en el useEffect
   });
 
-
-  
   return (
     <div className="flex h-[calc(100vh-100px)] items-center justify-center">
       <div className="bg-zinc-800 max-w-md w-full p-10 rounded-md my-2">
-  {Array.isArray(singinErrors) &&
-  singinErrors.map((error, i) => (
-    <div key={i} className="bg-red-500 p-2">
-      {error}
-    </div>
-))}
+        {Array.isArray(singinErrors) &&
+          singinErrors.map((error, i) => (
+            <div key={i} className="bg-red-500 p-2">
+              {error}
+            </div>
+          ))}
 
-
-        <h1 className='text-2xl font-bold'>Iniciar Sesion</h1>
+        <h1 className="text-2xl font-bold">Iniciar Sesión</h1>
         <form onSubmit={onSubmit}>
           <input
             type="text"
@@ -59,11 +55,13 @@ const LoginPage = () => {
             <p className="text-red-500">La contraseña es requerida</p>
           )}
 
-          <button type="submit">Inciar sesion</button>
+          <button type="submit">Iniciar sesión</button>
         </form>
-        <p className="flex gap-x-2 justify-between">No tienes una cuenta? 
-
-          <Link to="/register" className="text-sky-200">Registrarse</Link>
+        <p className="flex gap-x-2 justify-between">
+          ¿No tienes una cuenta?
+          <Link to="/register" className="text-sky-200">
+            Registrarse
+          </Link>
         </p>
       </div>
     </div>
