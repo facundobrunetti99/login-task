@@ -9,12 +9,14 @@ import TaskFormPage from "../src/page/TaskFormPage";
 import ProfilePage from "./page/ProfilePage";
 import HomePage from "./page/HomePage";
 import ProtectedRoute from "./ProtectedRoute";
+import Navbar from "../src/components/Navbar"; // ✅ IMPORTAR NAVBAR
 
 const App = () => {
   return (
     <AuthProvider>
       <TaskProvider> {/* ✅ ENVOLVER CON TaskProvider */}
         <BrowserRouter>
+        <Navbar></Navbar>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />

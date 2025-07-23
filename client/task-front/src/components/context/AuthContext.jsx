@@ -46,6 +46,12 @@ const singin = async (user) => {
   }
 };
 
+const logout = () => {
+  Cookies.remove("token");
+  setIsAuthenticated(false);
+  setUser(null);
+  setErrors([]);
+};
 useEffect(()=>{
   if(errors.length>0){
     const timer=setTimeout(()=>{
@@ -82,7 +88,7 @@ useEffect(()=>{
 
 
   return (
-    <AuthContext.Provider value={{ singup,singin, user, isAuthenticated, errors }}>
+    <AuthContext.Provider value={{ singup,singin,logout, user, isAuthenticated, errors }}>
       {children}
     </AuthContext.Provider>
   );
