@@ -3,43 +3,47 @@ import bcrypt from "bcryptjs";
 import { createAccessToken } from "../libs/jwt.js";
 import { TOKEN_SECRET } from "../config.js";
 import jwt from "jsonwebtoken";
-export const register = async (req, res) => {
-  const { email,username, password } = req.body;
 
-  
+export const register = async (req, res) => {
+  const { email, username, password } = req.body;
 
   try {
-
-    const userFound= await User.findOne({email})
-    const pwhash = await bcrypt.hash(password, 10);
-    if(userFound) 
+    const userFound = await User.findOne({ email });
+    if (userFound)
       return res.status(400).json(["El correo ya esta en uso"]);
+
+    const pwhash = await bcrypt.hash(password, 10);
 
     const newUser = new User({
       username,
       email,
       password: pwhash,
     });
+
     const userSaved = await newUser.save();
 
-  /*   const token = await createAccessToken({ id: userSaved._id });
-    res.cookie("token", token);
-      Esto lo comento por que si me registro y envio la cookie
-      en este caso ya estoy como inciado por lo tanto no deberia ser asi
-      solo la cookie la voy a utilizar cuando inicie sesion osea en el login
-    */
+
+    const token = await createAccessToken({ id: userSaved._id });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none", 
+    });
 
     res.json({
       id: userSaved._id,
       username: userSaved.username,
-      email:userSaved.email,
+      email: userSaved.email,
       createdAt: userSaved.createdAt,
       updateAt: userSaved.updatedAt,
     });
   } catch (error) {
-    res.status(500).json({message: error.message})
+    res.status(500).json({ message: error.message });
   }
 };
+
+
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -53,7 +57,11 @@ export const login = async (req, res) => {
     }
 
     const token = await createAccessToken({ id: userFound._id });
-    res.cookie("token", token)
+    res.cookie("token", token,{
+      httpOnly: true,
+      secure: true, 
+      sameSite: "none", 
+    })
 
     res.json({
       id: userFound._id,
@@ -88,22 +96,31 @@ export const profile =async (req,res)=>{
     });
 }
 
-export const verifyToken= async (req, res) => {
-  const { token } = req.cookies;
-  if (!token) return res.status(401).json({ message: "No token, authorization denied" });
-                               
-jwt.verify(token,TOKEN_SECRET, async (err,user)=>{
+export const verifyToken = async (req, res) => {
+  try {
+    const { token } = req.cookies;
 
-  if(err)return res.status(401).json({ message: "No token, authorization denied" });
-  const userFound = await User.findById(user.id);
-  if(!userFound) return res.status(400).json({message:"Usuario no encontrado"});
-  return res.json({
-    id: userFound._id,
-    username: userFound.username,
-    email: userFound.email,
-    createdAt: userFound.createdAt,
-    updatedAt: userFound.updatedAt,
-})
-}
-  )
-} 
+    if (!token) {
+      return res.status(401).json({ message: "No token, authorization denied" });
+    }
+
+    const decoded = await verifyPromise(token, TOKEN_SECRET);
+
+    const userFound = await User.findById(decoded.id);
+    if (!userFound) {
+      return res.status(400).json({ message: "Usuario no encontrado" });
+    }
+
+    return res.json({
+      id: userFound._id,
+      username: userFound.username,
+      email: userFound.email,
+      createdAt: userFound.createdAt,
+      updatedAt: userFound.updatedAt,
+    });
+
+  } catch (error) {
+    return res.status(401).json({ message: "Token inválido o expirado" });
+  }
+};
+
