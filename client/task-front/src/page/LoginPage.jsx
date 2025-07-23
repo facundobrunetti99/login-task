@@ -12,14 +12,16 @@ const LoginPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const {singin, errors:singinErrors}=useAuth();
 
- const { singup, isAuthenticated, errors: registerErrors } = useAuth();
-  const navigate = useNavigate();
+
+  const navigate = useNavigate();const { singin, singup, isAuthenticated, errors:singinErrors } = useAuth();
+
 
   useEffect(() => {
-    if (isAuthenticated) navigate("/task");
-  }, [isAuthenticated]);
+    if (isAuthenticated) navigate("/tasks");
+  }, [isAuthenticated])
+
+  
   const onSubmit = handleSubmit((data) => {
     singin(data);
   });

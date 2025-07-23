@@ -1,12 +1,13 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useTask } from '../components/context/TaskContext';
+import { Link } from 'react-router';
 function TaskFormPage() {
 
 const { register, handleSubmit } = useForm();
-const {tasks}=useTask();
+const {tasks,createTask}=useTask();
 const onSubmitt= handleSubmit((data) => {
-  console.log(data);  
+  createTask(data);  
 });
   return (
 
@@ -30,6 +31,7 @@ const onSubmitt= handleSubmit((data) => {
         Guardar
       </button>
     </form>
+    <Link to={"/tasks"}  className="text-white-200" >Mostrar tareas</Link>
   </div>
 </div>
 
