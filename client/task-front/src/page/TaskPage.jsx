@@ -37,7 +37,7 @@ const TaskPage = () => {
   </div>
   
 </div>
-     <  Link to={"/tasks/new"} className='text-sky-200 my-5' >Cargar tareas</Link>   
+     <  Link to={"/tasks"} className='text-sky-200 my-5' >Cargar tareas</Link>   
 
     </div>
     

@@ -31,7 +31,6 @@ function TaskFormPage() {
      await createTask(data);  
      setSuccessMessage("✅ Tarea creada con éxito");
     setTimeout(() => setSuccessMessage(""), 3000);  
-      reset(); 
     }
           
                         

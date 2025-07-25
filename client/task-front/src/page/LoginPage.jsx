@@ -14,7 +14,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/tasks/new";
+  const from = location.state?.from?.pathname || "/tasks";
 
   useEffect(() => {
     if (isAuthenticated) navigate(from, { replace: true });
@@ -22,7 +22,6 @@ const LoginPage = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     await singin(data);
-    // La redirección automática ocurre en el useEffect
   });
 
   return (
