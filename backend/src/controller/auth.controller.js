@@ -24,11 +24,10 @@ export const register = async (req, res) => {
 
 
     const token = await createAccessToken({ id: userSaved._id });
-
-    res.cookie("token", token, {
+  res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none", 
+      secure: false,
+        sameSite: "lax", 
     });
 
     res.json({
@@ -38,6 +37,8 @@ export const register = async (req, res) => {
       createdAt: userSaved.createdAt,
       updateAt: userSaved.updatedAt,
     });
+
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -57,11 +58,12 @@ export const login = async (req, res) => {
     }
 
     const token = await createAccessToken({ id: userFound._id });
-    res.cookie("token", token,{
+ res.cookie("token", token, {
       httpOnly: true,
-      secure: true, 
-      sameSite: "none", 
-    })
+      secure: false,
+      sameSite: "lax", 
+    });
+
 
     res.json({
       id: userFound._id,
@@ -98,17 +100,19 @@ export const profile =async (req,res)=>{
 
 export const verifyToken = async (req, res) => {
   try {
-    const { token } = req.cookies;
+    console.log("Cookies recibidas:", req.cookies); // 👈 esto deberías ver en terminal
 
+    const { token } = req.cookies;
     if (!token) {
+      console.log("No hay token");
       return res.status(401).json({ message: "No token, authorization denied" });
     }
 
-    const decoded = await verifyPromise(token, TOKEN_SECRET);
+    const decoded = jwt.verify(token, TOKEN_SECRET); // 🔥 ¡puede fallar acá!
 
     const userFound = await User.findById(decoded.id);
     if (!userFound) {
-      return res.status(400).json({ message: "Usuario no encontrado" });
+      return res.status(401).json({ message: "Usuario no encontrado" });
     }
 
     return res.json({
@@ -120,7 +124,9 @@ export const verifyToken = async (req, res) => {
     });
 
   } catch (error) {
+    console.error("Error al verificar token:", error); // 👈 Mostrá el error real
     return res.status(401).json({ message: "Token inválido o expirado" });
   }
 };
+
 
