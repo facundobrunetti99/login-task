@@ -6,7 +6,7 @@ export const createStory = async (req, res) => {
     try {
         const { title, description, date } = req.body;
 
-        const newStory = ({
+        const newStory =new Story ({
             title,
             description,
             date,
