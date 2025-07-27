@@ -28,8 +28,6 @@ export const getProjects = async (req, res) => {
         res.status(404).json({ message: error.message })
     }
 
-
-
 }
 
 export const getProject = async (req, res) => {
@@ -53,10 +51,10 @@ export const updateProject = async (req, res) => {
         if (!projectId) {
             throw new Error("Proyecto no encontrado para actualizar")
         }
-        res.json({ projectId })
+        res.json(projectId)
 
     } catch (error) {
-        res.status(404).json.message({ message: error.message })
+        res.status(404).json({ message: error.message })
     }
 }
 
@@ -68,7 +66,8 @@ export const deleteProject = async (req, res) => {
             throw new Error("Proyecto no encontrado para eliminar")
         }
     } catch (error) {
-
+        res.status(404).json({message:error.message})
     }
+    res.json(projectId)
 }
 

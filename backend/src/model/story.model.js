@@ -20,5 +20,7 @@ const epicSchema = new mongoose.Schema(
             required: true
         }
 
-    });
-export default mongoose.model('History', userSchema)
+    }, {
+    timestamps: true
+});
+export default mongoose.model('Story', userSchema)
