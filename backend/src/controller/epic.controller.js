@@ -55,7 +55,7 @@ export const getEpic = async (req, res) => {
 }
 
 
-export const uptadeEpic = async (req, res) => {
+export const updateEpic = async (req, res) => {
     try {
         const epic = await Epic.findByIdAndUpdate(req.params.id, req.bodyk, {
             new: true

@@ -13,9 +13,9 @@ const taskSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    histoy: {
+    story: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'History',
+      ref: 'Story',
       required: true,
     },
 

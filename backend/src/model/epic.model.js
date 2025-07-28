@@ -16,9 +16,9 @@ const epicSchema = new mongoose.Schema(
             type: Date,
             default: Date.now,
         },
-        history: {
+        story: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'History',
+            ref: 'story',
             required: true
         }
 
