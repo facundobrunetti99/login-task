@@ -1,6 +1,6 @@
 import {createContext, useContext,useState} from 'react';
 import React from 'react';
-import { createTaskRequest,getTasksRequest,deleteTaskRequest,getTaskRequest,updateTaskRequest } from '../../api/task';
+import { createTaskRequest,getTasksRequest,deleteTaskRequest,getTaskRequest,updateTaskRequest } from '../../api/task.js';
 
 const TaskContext = createContext();
 export const useTask = () => {
@@ -71,7 +71,7 @@ const getTask = async (id) => {
 
 const updateTask = async (id, task) => {
   try {
-    const res = await updateTaskRequest(id, task); // ✅ ahora correcto
+    const res = await updateTaskRequest(id, task); 
     setTasks(tasks.map(t => (t._id === id ? res.data : t)));
     return res.data;
   } catch (error) {
