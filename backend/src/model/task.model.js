@@ -15,15 +15,13 @@ const taskSchema = new mongoose.Schema(
     },
     story: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Story',
+      ref: "Story",
       required: true,
     },
-
   },
   {
     timestamps: true,
   }
 );
-
 
 export default mongoose.model("Task", taskSchema);

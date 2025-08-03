@@ -1,87 +1,74 @@
-import Epic from "../model/epic.model.js"
+import Epic from "../model/epic.model.js";
 
 export const createEpic = async (req, res) => {
-    try {
-        const { title, description, date } = req.body;
-        const newEpic = new Epic({
-            title,
-            description,
-            date,
-            project: req.project.id
-        })
-        const saveEpic = await newEpic.save()
+  try {
+    const { title, description, date } = req.body;
 
-        if (!newEpic) {
-            throw new Error("Epica no encontrada")
-        }
-        res.json(saveEpic)
-    } catch {
-        res.status(404).json({
-            message: error.message
-        })
-    }
-}
+    const newEpic = new Epic({
+      title,
+      description,
+      date,
+      project: req.project._id,
+    });
 
+    const savedEpic = await newEpic.save();
+
+    res.status(201).json(savedEpic);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al crear la epica", error: error.message });
+  }
+};
 
 export const getEpics = async (req, res) => {
-    try {
-        const epics = await Epic.find({
-            project: req.project.id
-        }).populate("project")
+  try {
+    const epics = await Epic.find({ project: req.project._id });
+    res.json(epics);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener epicas", error: error.message });
+  }
+};
 
-        if (!epics) {
-            throw new Error("No se encontraron las epicas")
-        }
+export const getEpic = (req, res) => {
+  console.log("=== CONTROLADOR GETEPIC ===");
+  console.log("Epic desde middleware:", req.epic ? req.epic.title : "No epic");
+  console.log(
+    "Project desde middleware:",
+    req.project ? req.project.title : "No project"
+  );
 
-        res.json(epics)
+  if (!req.epic) {
+    return res
+      .status(404)
+      .json({ message: "Épica no encontrada en controlador" });
+  }
 
-    } catch (error) {
-        res.status(404).json({ message: error.message })
-
-    }
-}
-
-
-export const getEpic = async (req, res) => {
-    try {
-        const epic = await Epic.findById(req.params.id).populate("project")
-        if (!epic) {
-            throw new Error("Epica no encontrada")
-        }
-        res.json(epic)
-    } catch (error) {
-        res.status(404).json({ message: error.message })
-    }
-}
-
+  console.log("✅ Enviando épica al frontend");
+  res.json(req.epic);
+};
 
 export const updateEpic = async (req, res) => {
-    try {
-        const epic = await Epic.findByIdAndUpdate(req.params.id, req.bodyk, {
-            new: true
-        }).popluta("project")
-
-        if (!epic) {
-            throw new Error("no se pudo actualizar la epica")
-        }
-    } catch (error) {
-        res.status(404).json({
-            message: error.message
-        })
-    }
-}
+  try {
+    Object.assign(req.epic, req.body);
+    const updatedEpic = await req.epic.save();
+    res.json(updatedEpic);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al actualizar la epica", error: error.message });
+  }
+};
 
 export const deleteEpic = async (req, res) => {
-    try {
-        const epic = await Epic.findByIdAndDelete(req.params.id)
-
-        if (!epic) {
-            throw new Error("No se pudo eliminar correctamente la epica")
-        }
-    } catch (error) {
-        res.status(404).json({
-            message: error.messatge
-
-        })
-    }
-}
+  try {
+    await req.epic.deleteOne();
+    res.json({ message: "Epica eliminada" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al eliminar la epica", error: error.message });
+  }
+};

@@ -1,14 +1,69 @@
 import { Router } from "express";
 import { authRequired } from "../middlewares/validateToken.js";
-import {getTasks,getTask,updateTask,createTask,deleteTask} from "../controller/task.controller.js"
-import {validateSchema} from "../middlewares/validate.middleware.js"
-import {createTaskSchema} from "../schema/task.schema.js"
-const router= Router()
+import { validateSchema } from "../middlewares/validate.middleware.js";
+import { createTaskSchema } from "../schema/task.schema.js";
+import {
+  getTasks,
+  getTask,
+  createTask,
+  updateTask,
+  deleteTask,
+} from "../controller/task.controller.js";
+import { loadProject } from "../middlewares/loadProject.js";
+// ✅ IMPORTANTE: Asegúrate de importar loadEpicForStories, NO loadEpic
+import { loadEpicForStories } from "../middlewares/loadEpicForStories.js";
+import { loadStory } from "../middlewares/loadStory.js";
+import { loadTask } from "../middlewares/loadTask.js";
 
-router.get('/tasks', authRequired,getTasks)
-router.get('/tasks/:id', authRequired,getTask)
-router.post('/tasks', authRequired,validateSchema(createTaskSchema),createTask)
-router.delete('/tasks/:id', authRequired,deleteTask)
-router.put('/tasks/:id', authRequired,updateTask)
+const router = Router();
+
+router.get(
+  "/projects/:projectId/epics/:epicId/stories/:storyId/tasks",
+  authRequired,
+  loadProject,
+  loadEpicForStories,
+  loadStory,
+  getTasks
+);
+
+router.post(
+  "/projects/:projectId/epics/:epicId/stories/:storyId/task",
+  authRequired,
+  loadProject,
+  loadEpicForStories,
+  loadStory,
+  validateSchema(createTaskSchema),
+  createTask
+);
+
+router.get(
+  "/projects/:projectId/epics/:epicId/stories/:storyId/task/:id",
+  authRequired,
+  loadProject,
+  loadEpicForStories,
+  loadStory,
+  loadTask,
+  getTask
+);
+
+router.put(
+  "/projects/:projectId/epics/:epicId/stories/:storyId/task/:id",
+  authRequired,
+  loadProject,
+  loadEpicForStories,
+  loadStory,
+  loadTask,
+  updateTask
+);
+
+router.delete(
+  "/projects/:projectId/epics/:epicId/stories/:storyId/task/:id",
+  authRequired,
+  loadProject,
+  loadEpicForStories,
+  loadStory,
+  loadTask,
+  deleteTask
+);
 
 export default router;

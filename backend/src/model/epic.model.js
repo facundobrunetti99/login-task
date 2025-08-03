@@ -1,29 +1,23 @@
 import mongoose from "mongoose";
 
 const epicSchema = new mongoose.Schema(
-    {
-        title:
-        {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            required: true,
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+    },
+    project: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-        },
-        date: {
-            type: Date,
-            default: Date.now,
-        },
-        story: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'story',
-            required: true
-        }
-
-    }, {
-    timestamps: true
-}
-)
-export default mongoose.model('Epic', userSchema)
+export default mongoose.model("Epic", epicSchema);

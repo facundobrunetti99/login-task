@@ -9,8 +9,7 @@ export const register = async (req, res) => {
 
   try {
     const userFound = await User.findOne({ email });
-    if (userFound)
-      return res.status(400).json(["El correo ya esta en uso"]);
+    if (userFound) return res.status(400).json(["El correo ya esta en uso"]);
 
     const pwhash = await bcrypt.hash(password, 10);
 
@@ -22,12 +21,11 @@ export const register = async (req, res) => {
 
     const userSaved = await newUser.save();
 
-
     const token = await createAccessToken({ id: userSaved._id });
-  res.cookie("token", token, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: false,
-        sameSite: "lax", 
+      sameSite: "lax",
     });
 
     res.json({
@@ -37,13 +35,10 @@ export const register = async (req, res) => {
       createdAt: userSaved.createdAt,
       updateAt: userSaved.updatedAt,
     });
-
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -54,16 +49,15 @@ export const login = async (req, res) => {
       userFound && (await bcrypt.compare(password, userFound.password));
 
     if (!isValidUser) {
-      return res.status(400).json(["Correo o contraseña incorrectos", ]);
+      return res.status(400).json(["Correo o contraseña incorrectos"]);
     }
 
     const token = await createAccessToken({ id: userFound._id });
- res.cookie("token", token, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: false,
-      sameSite: "lax", 
+      sameSite: "lax",
     });
-
 
     res.json({
       id: userFound._id,
@@ -77,38 +71,39 @@ export const login = async (req, res) => {
   }
 };
 
-
-export const logout= (req,res)=>{
-  res.cookie('token',"",{
-  expires: new Date(0)
-  })
+export const logout = (req, res) => {
+  res.cookie("token", "", {
+    expires: new Date(0),
+  });
   return res.sendStatus(200);
-}
+};
 
-export const profile =async (req,res)=>{
-
-  const userFound= await User.findById(req.user.id)
-  if(!userFound)return res.satatus(400).json({message:"Usuario no encontrado"})
-    res.json({
-      id: userFound._id,
-      username: userFound.username,
-      emai:userFound.email,
-      createdAt: userFound.createdAt,
-      updateAt: userFound.updatedAt,
-    });
-}
+export const profile = async (req, res) => {
+  const userFound = await User.findById(req.user.id);
+  if (!userFound)
+    return res.satatus(400).json({ message: "Usuario no encontrado" });
+  res.json({
+    id: userFound._id,
+    username: userFound.username,
+    emai: userFound.email,
+    createdAt: userFound.createdAt,
+    updateAt: userFound.updatedAt,
+  });
+};
 
 export const verifyToken = async (req, res) => {
   try {
-    console.log("Cookies recibidas:", req.cookies); // 👈 esto deberías ver en terminal
+    console.log("Cookies recibidas:", req.cookies);
 
     const { token } = req.cookies;
     if (!token) {
       console.log("No hay token");
-      return res.status(401).json({ message: "No token, authorization denied" });
+      return res
+        .status(401)
+        .json({ message: "No token, authorization denied" });
     }
 
-    const decoded = jwt.verify(token, TOKEN_SECRET); // 🔥 ¡puede fallar acá!
+    const decoded = jwt.verify(token, TOKEN_SECRET);
 
     const userFound = await User.findById(decoded.id);
     if (!userFound) {
@@ -122,11 +117,8 @@ export const verifyToken = async (req, res) => {
       createdAt: userFound.createdAt,
       updatedAt: userFound.updatedAt,
     });
-
   } catch (error) {
-    console.error("Error al verificar token:", error); // 👈 Mostrá el error real
+    console.error("Error al verificar token:", error);
     return res.status(401).json({ message: "Token inválido o expirado" });
   }
 };
-
-
