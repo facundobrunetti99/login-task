@@ -1,99 +1,88 @@
-import {createContext, useContext,useState} from 'react';
-import React from 'react';
-import { createTaskRequest,getTasksRequest,deleteTaskRequest,getTaskRequest,updateTaskRequest } from '../../api/task.js';
+import React, { createContext, useContext, useState } from "react";
+import {
+  createTaskRequest,
+  getTasksRequest,
+  getTaskRequest,
+  updateTaskRequest,
+  deleteTaskRequest,
+} from "../../api/task.js";
 
 const TaskContext = createContext();
+
 export const useTask = () => {
   const context = useContext(TaskContext);
-  if (!context) {
-    throw new Error("useTask debe estar dentro de TaskProvider");
-  }
+  if (!context) throw new Error("useTask debe estar dentro de TaskProvider");
   return context;
-}
-
-
-
-export function TaskProvider({children}) {
-
-    const [tasks, setTasks] = useState([]);
-
-
-    
-const  createTask = async (task) => {
- const res=await createTaskRequest(task);
-  setTasks([...tasks, res.data]);
-  console.log(res.data);
-}
-
-
-const getTasks = async () => {
-try {
-  const res = await getTasksRequest();  
-  setTasks(res.data);
-} catch (error) { 
-
-if (error.response && error.response.status === 401) {
-    console.error(error.response.data.message);
-  } else if (error.response && error.response.status === 404) {
-    console.error("No se encontraron tareas."); 
-  }
-
-
-
-}
-
-
 };
 
-const deleteTask = async (id) => {
-try {
-  await deleteTaskRequest(id);
-  setTasks(tasks.filter(task => task._id !== id));
-  console.log(error)
-}
-catch (error) {
-  if (error.response && error.response.status === 404) {
-    console.error("Tarea no encontrada para eliminar.");
-  } 
-}
-};
+export function TaskProvider({ children }) {
+  const [tasks, setTasks] = useState([]);
 
-const getTask = async (id) => {
-  try {
-    const res = await getTaskRequest(id);
-    return res.data;
-  } catch (error) {
-    if (error.response && error.response.status === 404) {
-      console.error("Tarea no encontrada.");
+  const createTask = async (projectId, epicId, storyId, task) => {
+    const res = await createTaskRequest(projectId, epicId, storyId, task);
+    setTasks([...tasks, res.data]);
+  };
+
+  const getTasks = async (projectId, epicId, storyId) => {
+    try {
+      const res = await getTasksRequest(projectId, epicId, storyId);
+      setTasks(res.data);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        console.error(error.response.data.message);
+      } else if (error.response?.status === 404) {
+        console.error("No se encontraron tareas.");
+      }
     }
-    }}
+  };
 
-
-const updateTask = async (id, task) => {
-  try {
-    const res = await updateTaskRequest(id, task); 
-    setTasks(tasks.map(t => (t._id === id ? res.data : t)));
-    return res.data;
-  } catch (error) {
-    console.error(error);
-    if (error.response && error.response.status === 404) {
-      console.error("Tarea no encontrada para actualizar.");
+  const deleteTask = async (projectId, epicId, storyId, id) => {
+    try {
+      await deleteTaskRequest(projectId, epicId, storyId, id);
+      setTasks(tasks.filter((task) => task._id !== id));
+    } catch (error) {
+      if (error.response?.status === 404) {
+        console.error("Tarea no encontrada para eliminar.");
+      }
     }
-  }
+  };
+
+  const getTask = async (projectId, epicId, storyId, id) => {
+    try {
+      const res = await getTaskRequest(projectId, epicId, storyId, id);
+      return res.data;
+    } catch (error) {
+      if (error.response?.status === 404) {
+        console.error("Tarea no encontrada.");
+      }
+    }
+  };
+
+  const updateTask = async (projectId, epicId, storyId, id, task) => {
+    try {
+      const res = await updateTaskRequest(projectId, epicId, storyId, id, task);
+      setTasks(tasks.map((t) => (t._id === id ? res.data : t)));
+      return res.data;
+    } catch (error) {
+      console.error(error);
+      if (error.response?.status === 404) {
+        console.error("Tarea no encontrada para actualizar.");
+      }
+    }
+  };
+
+  return (
+    <TaskContext.Provider
+      value={{
+        tasks,
+        createTask,
+        getTasks,
+        deleteTask,
+        getTask,
+        updateTask,
+      }}
+    >
+      {children}
+    </TaskContext.Provider>
+  );
 }
-
-
-    return (
-        <TaskContext.Provider value={{
-            tasks,
-            createTask,
-            getTasks,
-            deleteTask,
-            getTask,updateTask
-          
-        }}>
-            {children}
-        </TaskContext.Provider>
-    );
-};
-

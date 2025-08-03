@@ -1,5 +1,5 @@
-import { createContext, useContext, useState } from "react";
-import React from "react";
+// context/StoryContext.js
+import React, { createContext, useContext, useState } from "react";
 import {
   createStoryRequest,
   getStoriesRequest,
@@ -9,26 +9,24 @@ import {
 } from "../../api/story.js";
 
 const StoryContext = createContext();
+
 export const useStory = () => {
   const context = useContext(StoryContext);
-  if (!context) {
-    throw new Error("useStory debe estar dentro de storyProvider");
-  }
+  if (!context) throw new Error("useStory debe estar dentro de StoryProvider");
   return context;
 };
 
 export function StoryProvider({ children }) {
   const [stories, setStories] = useState([]);
 
-  const createStory = async (story) => {
-    const res = await createStoryRequest(story);
+  const createStory = async (projectId, epicId, story) => {
+    const res = await createStoryRequest(projectId, epicId, story);
     setStories([...stories, res.data]);
-    console.log(res.data);
   };
 
-  const getStories = async () => {
+  const getStories = async (projectId, epicId) => {
     try {
-      const res = await getStoriesRequest();
+      const res = await getStoriesRequest(projectId, epicId);
       setStories(res.data);
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -39,11 +37,10 @@ export function StoryProvider({ children }) {
     }
   };
 
-  const deleteStory = async (id) => {
+  const deleteStory = async (projectId, epicId, id) => {
     try {
-      await deleteStoryRequest(id);
+      await deleteStoryRequest(projectId, epicId, id);
       setStories(stories.filter((story) => story._id !== id));
-      console.log(error);
     } catch (error) {
       if (error.response && error.response.status === 404) {
         console.error("Story no encontrada para eliminar.");
@@ -51,20 +48,20 @@ export function StoryProvider({ children }) {
     }
   };
 
-  const getStory = async (id) => {
+  const getStory = async (projectId, epicId, id) => {
     try {
-      const res = await getStoryRequest(id);
+      const res = await getStoryRequest(projectId, epicId, id);
       return res.data;
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        console.error("story no encontrada.");
+        console.error("Story no encontrada.");
       }
     }
   };
 
-  const updateStory = async (id, story) => {
+  const updateStory = async (projectId, epicId, id, story) => {
     try {
-      const res = await updateStoryRequest(id, story);
+      const res = await updateStoryRequest(projectId, epicId, id, story);
       setStories(stories.map((s) => (s._id === id ? res.data : s)));
       return res.data;
     } catch (error) {

@@ -1,5 +1,9 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { registerRequest, loginRequest, verifyTokenRequest } from "../../api/auth";
+import {
+  registerRequest,
+  loginRequest,
+  verifyTokenRequest,
+} from "../../api/auth";
 import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
@@ -59,7 +63,6 @@ export const AuthProvider = ({ children }) => {
       try {
         const res = await verifyTokenRequest();
         if (res.data?.message) {
-          // Si hay un error de autorización
           setIsAuthenticated(false);
           setUser(null);
           return;
@@ -76,7 +79,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ singup, singin, logout, user, isAuthenticated, errors }}>
+    <AuthContext.Provider
+      value={{ singup, singin, logout, user, isAuthenticated, errors }}
+    >
       {children}
     </AuthContext.Provider>
   );

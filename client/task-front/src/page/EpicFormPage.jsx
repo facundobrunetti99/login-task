@@ -1,62 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useTask } from '../components/context/TaskContext';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useEpic } from '../components/context/EpicContext';
 
-function TaskFormPage() {
+function EpicFormPage() {
   const { register, handleSubmit, setValue } = useForm();
-  const { createTask, getTask, updateTask } = useTask();
+  const { createEpic, getEpic, updateEpic } = useEpic();
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const { projectId, epicId, storyId, id } = useParams(); 
+  const params = useParams();
   const navigate = useNavigate();
 
+
+  const projectId = params.projectId;
+  const epicId = params.id;
+
+ 
+  console.log("Todos los params:", params);
+  console.log("ProjectId:", projectId);
+  console.log("EpicId:", epicId);
+  console.log("URL actual:", window.location.pathname);
+
   useEffect(() => {
-    async function loadTask() {
-      if (id && projectId && epicId && storyId) {
+    async function loadEpic() {
+     
+      if (epicId && projectId) {
         try {
           setLoading(true);
-          const task = await getTask(projectId, epicId, storyId, id);
-          if (task) {
-            setValue('title', task.title);
-            setValue('description', task.description);
+          const epic = await getEpic(projectId, epicId);
+          
+          if (epic) {
+            setValue('title', epic.title);
+            setValue('description', epic.description);
           } else {
-            setErrorMessage("Tarea no encontrada");
-            setTimeout(() => navigate(`/projects/${projectId}/epics/${epicId}/stories/${storyId}/tasks`), 2000);
+            setErrorMessage("Épica no encontrada");
+            setTimeout(() => navigate(`/projects/${projectId}/epics`), 2000);
           }
         } catch (error) {
-          console.error("Error cargando tarea:", error);
-          setErrorMessage("Error al cargar la tarea");
+          console.error("Error cargando épica:", error);
+          setErrorMessage("Error al cargar la épica");
         } finally {
           setLoading(false);
         }
+      } else if (epicId && !projectId) {
+        setErrorMessage("Falta el ID del proyecto");
       }
+      
     }
-    loadTask();
-  }, [id, projectId, epicId, storyId, setValue, getTask, navigate]);
+    loadEpic();
+  }, [epicId, projectId, setValue, getEpic, navigate]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       setLoading(true);
       setErrorMessage("");
       
-      if (id) {
-        await updateTask(projectId, epicId, storyId, id, data);
-        setSuccessMessage("✅ Tarea actualizada con éxito");
+      if (epicId) {
+        await updateEpic(projectId, epicId, data);
+        setSuccessMessage("✅ Épica actualizada con éxito");
       } else {
-        await createTask(projectId, epicId, storyId, data);
-        setSuccessMessage("✅ Tarea creada con éxito");
+        await createEpic(projectId, data);
+        setSuccessMessage("✅ Épica creada con éxito");
       }
       
       setTimeout(() => {
         setSuccessMessage("");
-        navigate(`/projects/${projectId}/epics/${epicId}/stories/${storyId}/tasks`);
+        navigate(`/projects/${projectId}/epics`);
       }, 2000);
       
     } catch (error) {
       console.error("Error en onSubmit:", error);
-      setErrorMessage("Error al guardar la tarea");
+      setErrorMessage("Error al guardar la épica");
     } finally {
       setLoading(false);
     }
@@ -74,7 +89,7 @@ function TaskFormPage() {
     <div className="flex justify-center items-center min-h-screen bg-gray-900">
       <div className="bg-zinc-800 max-w-md w-full p-10 rounded-md flex flex-col gap-2">
         <h2 className="text-2xl font-bold text-white mb-4 text-center">
-          {id ? 'Editar Tarea' : 'Crear Tarea'}
+          {epicId ? 'Editar Épica' : 'Crear Épica'}
         </h2>
         
         <form onSubmit={onSubmit} className="flex flex-col gap-2">
@@ -89,7 +104,7 @@ function TaskFormPage() {
             placeholder="Descripción"
             {...register("description")}
             className="bg-zinc-700 text-white px-4 py-2 rounded-md my-2"
-          />
+          ></textarea>
 
           <button 
             className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md disabled:opacity-50"
@@ -107,30 +122,12 @@ function TaskFormPage() {
           <div className="text-red-400 font-medium mt-2">{errorMessage}</div>
         )}
 
-      
-        <div className="flex flex-col gap-2 mt-4">
-          <Link 
-            to={`/projects/${projectId}/epics/${epicId}/stories/${storyId}/tasks`} 
-            className="text-blue-300 hover:underline text-center"
-          >
-            Ver Tareas
-          </Link>
-          <Link 
-            to={`/projects/${projectId}/epics/${epicId}/stories/${storyId}/task`} 
-            className="text-green-300 hover:underline text-center"
-          >
-            Crear Nueva Tarea
-          </Link>
-          <Link 
-            to={`/projects/${projectId}/epics/${epicId}/stories`} 
-            className="text-purple-300 hover:underline text-center"
-          >
-            ← Volver a Historias
-          </Link>
-        </div>
+        <Link to={`/projects/${projectId}/epics`} className="text-blue-300 mt-4 hover:underline">
+          Volver a Épicas
+        </Link>
       </div>
     </div>
   );
 }
 
-export default TaskFormPage;
+export default EpicFormPage;

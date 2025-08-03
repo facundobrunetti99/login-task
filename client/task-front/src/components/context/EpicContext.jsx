@@ -1,5 +1,4 @@
-import { createContext, useContext, useState } from "react";
-import React from "react";
+import React, { createContext, useContext, useState } from "react";
 import {
   getEpicRequest,
   getEpicsRequest,
@@ -9,6 +8,7 @@ import {
 } from "../../api/epic.js";
 
 const EpicContext = createContext();
+
 export const useEpic = () => {
   const context = useContext(EpicContext);
   if (!context) {
@@ -19,59 +19,76 @@ export const useEpic = () => {
 
 export function EpicProvider({ children }) {
   const [epics, setEpics] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const createEpic = async (epic) => {
-    const res = await createEpicRequest(epic);
-    setEpics([...epics, res.data]);
-    console.log(res.data);
+  const createEpic = async (projectId, epic) => {
+    try {
+      setLoading(true);
+      const res = await createEpicRequest(projectId, epic);
+      setEpics([...epics, res.data]);
+      return res.data;
+    } catch (error) {
+      console.error("Error creando épica:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getEpics = async () => {
+  const getEpics = async (projectId) => {
     try {
-      const res = await getEpicsRequest();
+      setLoading(true);
+      const res = await getEpicsRequest(projectId);
       setEpics(res.data);
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error(error.response.data.message);
-      } else if (error.response && error.response.status === 404) {
-        console.error("No se encontraron Epicas.");
-      }
-    }
-  };
-
-  const deleteEpic = async (id) => {
-    try {
-      await deleteEpicRequest(id);
-      setEpics(epics.filter((epic) => epic._id !== id));
-      console.log(error);
-    } catch (error) {
+      console.error("Error obteniendo épicas:", error);
       if (error.response && error.response.status === 404) {
-        console.error("Epica no encontrada para eliminar.");
+        console.error("No se encontraron Épicas para este proyecto.");
+        setEpics([]);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getEpic = async (id) => {
+  const deleteEpic = async (projectId, epicId) => {
     try {
-      const res = await getEpicRequest(id);
+      await deleteEpicRequest(projectId, epicId);
+      setEpics(epics.filter((epic) => epic._id !== epicId));
+    } catch (error) {
+      console.error("Error eliminando épica:", error);
+      if (error.response && error.response.status === 404) {
+        console.error("Épica no encontrada para eliminar.");
+      }
+      throw error;
+    }
+  };
+
+  const getEpic = async (projectId, epicId) => {
+    try {
+      const res = await getEpicRequest(projectId, epicId);
       return res.data;
     } catch (error) {
+      console.error("Error obteniendo épica:", error);
       if (error.response && error.response.status === 404) {
-        console.error("Tarea no encontrada.");
+        console.error("Épica no encontrada.");
+        return null;
       }
+      throw error;
     }
   };
 
-  const updateEpic = async (id, epic) => {
+  const updateEpic = async (projectId, epicId, epic) => {
     try {
-      const res = await updateTaskRequest(id, epic); 
-      setEpics(epics.map((t) => (e._id === id ? res.data : e)));
+      const res = await updateEpicRequest(projectId, epicId, epic);
+      setEpics(epics.map((e) => (e._id === epicId ? res.data : e)));
       return res.data;
     } catch (error) {
-      console.error(error);
+      console.error("Error actualizando épica:", error);
       if (error.response && error.response.status === 404) {
-        console.error("Epica no encontrada para actualizar.");
+        console.error("Épica no encontrada para actualizar.");
       }
+      throw error;
     }
   };
 
@@ -79,6 +96,7 @@ export function EpicProvider({ children }) {
     <EpicContext.Provider
       value={{
         epics,
+        loading,
         createEpic,
         getEpic,
         deleteEpic,

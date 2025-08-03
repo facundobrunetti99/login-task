@@ -7,7 +7,6 @@ const ProtectedRoute = () => {
   const location = useLocation();
 
   if (!isAuthenticated) {
-    // Guarda la ruta actual en `state.from`
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
