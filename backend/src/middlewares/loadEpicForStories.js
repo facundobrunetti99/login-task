@@ -9,6 +9,7 @@ export const loadEpicForStories = async (req, res, next) => {
   try {
     const epicId = req.params.epicId;
     const epicIdAlternative = req.params.id;
+     const projectId = req.params.projectId;
 
     if (!epicId && !epicIdAlternative) {
       return res.status(400).json({
