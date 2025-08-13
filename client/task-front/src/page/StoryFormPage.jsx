@@ -29,7 +29,6 @@ function StoryFormPage() {
       await createStory(projectId, epicId, data);
       setSuccessMessage("✅ Story creada con éxito");
     }
-    setTimeout(() => setSuccessMessage(""), 3000);
   });
 
   return (

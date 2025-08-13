@@ -6,3 +6,7 @@ export const verifyTokenRequest = () =>
   axios.get("/verify", {
     withCredentials: true,
   });
+export const logoutRequest = () =>
+  axios.post("/logout", {}, {
+    withCredentials: true,
+  });

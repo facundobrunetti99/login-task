@@ -10,17 +10,10 @@ function EpicFormPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const params = useParams();
-  const navigate = useNavigate();
-
 
   const projectId = params.projectId;
   const epicId = params.id;
 
- 
-  console.log("Todos los params:", params);
-  console.log("ProjectId:", projectId);
-  console.log("EpicId:", epicId);
-  console.log("URL actual:", window.location.pathname);
 
   useEffect(() => {
     async function loadEpic() {
@@ -35,7 +28,7 @@ function EpicFormPage() {
             setValue('description', epic.description);
           } else {
             setErrorMessage("Épica no encontrada");
-            setTimeout(() => navigate(`/projects/${projectId}/epics`), 2000);
+            
           }
         } catch (error) {
           console.error("Error cargando épica:", error);
@@ -49,7 +42,7 @@ function EpicFormPage() {
       
     }
     loadEpic();
-  }, [epicId, projectId, setValue, getEpic, navigate]);
+  }, [epicId, projectId, setValue, getEpic]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -64,10 +57,7 @@ function EpicFormPage() {
         setSuccessMessage("✅ Épica creada con éxito");
       }
       
-      setTimeout(() => {
-        setSuccessMessage("");
-        navigate(`/projects/${projectId}/epics`);
-      }, 2000);
+     
       
     } catch (error) {
       console.error("Error en onSubmit:", error);
@@ -113,6 +103,7 @@ function EpicFormPage() {
             {loading ? "Guardando..." : "Guardar"}
           </button>
         </form>
+       
 
         {successMessage && (
           <div className="text-green-400 font-medium mt-2">{successMessage}</div>

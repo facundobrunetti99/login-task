@@ -23,7 +23,6 @@ function TaskFormPage() {
             setValue('description', task.description);
           } else {
             setErrorMessage("Tarea no encontrada");
-            setTimeout(() => navigate(`/projects/${projectId}/epics/${epicId}/stories/${storyId}/tasks`), 2000);
           }
         } catch (error) {
           console.error("Error cargando tarea:", error);
@@ -40,7 +39,6 @@ function TaskFormPage() {
     try {
       setLoading(true);
       setErrorMessage("");
-      
       if (id) {
         await updateTask(projectId, epicId, storyId, id, data);
         setSuccessMessage("✅ Tarea actualizada con éxito");
@@ -48,11 +46,6 @@ function TaskFormPage() {
         await createTask(projectId, epicId, storyId, data);
         setSuccessMessage("✅ Tarea creada con éxito");
       }
-      
-      setTimeout(() => {
-        setSuccessMessage("");
-        navigate(`/projects/${projectId}/epics/${epicId}/stories/${storyId}/tasks`);
-      }, 2000);
       
     } catch (error) {
       console.error("Error en onSubmit:", error);

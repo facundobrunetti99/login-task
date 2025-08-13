@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import React from 'react';
-import { useEpic } from '../components/context/EpicContext'; // ← IMPORT FALTANTE
+import { useEpic } from '../components/context/EpicContext'; 
 
 function EpicCard({ epic }) {
     const { deleteEpic } = useEpic();
@@ -12,15 +12,14 @@ function EpicCard({ epic }) {
             <p className="text-gray-600 text-center mt-2">{epic.description}</p>
             
             <div className='flex flex-col gap-2 mt-4'>
-                {/* Botón Ver Historias */}
+              
                 <Link 
                     to={`/projects/${projectId}/epics/${epic._id}/stories`} 
                     className="w-full bg-purple-500 text-white px-4 py-2 rounded text-center hover:bg-purple-600 transition-colors"
                 >
                     Ver Historias
                 </Link>
-                
-                {/* Botones de editar y eliminar */}
+            
                 <div className='flex justify-between gap-2'>
                     <Link 
                         to={`/projects/${projectId}/epics/${epic._id}`} 

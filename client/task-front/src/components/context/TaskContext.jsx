@@ -28,7 +28,7 @@ export function TaskProvider({ children }) {
       const res = await getTasksRequest(projectId, epicId, storyId);
       setTasks(res.data);
     } catch (error) {
-      if (error.response?.status === 401) {
+      if (error.response?.status === 401 || error.response?.status === 400) {
         console.error(error.response.data.message);
       } else if (error.response?.status === 404) {
         console.error("No se encontraron tareas.");

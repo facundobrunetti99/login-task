@@ -3,6 +3,7 @@ import {
   registerRequest,
   loginRequest,
   verifyTokenRequest,
+  logoutRequest, 
 } from "../../api/auth";
 import Cookies from "js-cookie";
 
@@ -43,12 +44,17 @@ export const AuthProvider = ({ children }) => {
       setErrors([error.response?.data?.message || "Error al iniciar sesión"]);
     }
   };
-
-  const logout = () => {
-    Cookies.remove("token");
-    setIsAuthenticated(false);
-    setUser(null);
-    setErrors([]);
+  const logout = async () => {
+    try {
+      await logoutRequest();
+    } catch (error) {
+      console.error("Error al hacer logout:", error);
+    } finally {
+      Cookies.remove("token");
+      setIsAuthenticated(false);
+      setUser(null);
+      setErrors([]);
+    }
   };
 
   useEffect(() => {

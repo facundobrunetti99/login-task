@@ -26,8 +26,7 @@ function ProjectFormPage() {
             setValue('description', project.description);
           } else {
             setErrorMessage("Proyecto no encontrado");
-            
-            setTimeout(() => navigate('/projects'), 2000);
+           
           }
         } catch (error) {
           console.error("Error cargando proyecto:", error);
@@ -53,10 +52,6 @@ function ProjectFormPage() {
         setSuccessMessage("✅ Proyecto creado con éxito");
       }
       
-      setTimeout(() => {
-        setSuccessMessage("");
-        navigate('/projects');
-      }, 2000);
       
     } catch (error) {
       console.error("Error en onSubmit:", error);
