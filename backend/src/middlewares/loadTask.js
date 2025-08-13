@@ -3,8 +3,12 @@ import Task from "../model/task.model.js";
 export const loadTask = async (req, res, next) => {
   try {
     const taskId = req.params.id || req.body.task;
-    if (!taskId)
-      return res.status(400).json({ message: "Falta el ID de la tarea" });
+    if (!taskId){
+      console.log("asdasdasd")
+        return res.status(400).json({ message: "Falta el ID de la tarea" });
+    }
+
+    
 
     const task = await Task.findById(taskId).populate({
       path: "story",
@@ -31,6 +35,7 @@ export const loadTask = async (req, res, next) => {
 
     next();
   } catch (error) {
+ 
     res
       .status(500)
       .json({ message: "Error al cargar la tarea", error: error.message });

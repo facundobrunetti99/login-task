@@ -33,12 +33,6 @@ export const getEpics = async (req, res) => {
 };
 
 export const getEpic = (req, res) => {
-  console.log("=== CONTROLADOR GETEPIC ===");
-  console.log("Epic desde middleware:", req.epic ? req.epic.title : "No epic");
-  console.log(
-    "Project desde middleware:",
-    req.project ? req.project.title : "No project"
-  );
 
   if (!req.epic) {
     return res
@@ -46,7 +40,6 @@ export const getEpic = (req, res) => {
       .json({ message: "Épica no encontrada en controlador" });
   }
 
-  console.log("✅ Enviando épica al frontend");
   res.json(req.epic);
 };
 
